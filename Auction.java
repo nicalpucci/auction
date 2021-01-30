@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * A simple model of an auction.
@@ -43,7 +44,7 @@ public class Auction
             System.out.println(lot.toString());
         }
     }
-    
+
     /**
      * Make a bid for a lot.
      * A message is printed indicating whether the bid is
@@ -60,67 +61,77 @@ public class Auction
             boolean successful = selectedLot.bidFor(new Bid (bidder, value));
             if(successful) {
                 System.out.println("The bid for lot number " +
-                                   lotNumber + " was successful.");
+                    lotNumber + " was successful.");
             }
             else {
                 // Report which bid is higher.
                 System.out.println("Lot number: " + lotNumber +
-                                   " already has a bid of: " +
-                                   selectedLot.getHighestBid().getValue());
+                    " already has a bid of: " +
+                    selectedLot.getHighestBid().getValue());
             }
         }
-    }
+    }    
 
     /**
      * Return the lot with the given number. Return null
      * if a lot with this number does not exist.
      * @param lotNumber The number of the lot to return.
      */
-    public Lot getLot(int lotNumber)
-    {
-        if((lotNumber >= 1) && (lotNumber < nextLotNumber)) {
-            // The number seems to be reasonable.
-            Lot selectedLot = lots.get(lotNumber - 1);
-            // Include a confidence check to be sure we have the
-            // right lot.
-            if(selectedLot.getNumber() != lotNumber) {
-                System.out.println("Internal error: Lot number " +
-                                   selectedLot.getNumber() +
-                                   " was returned instead of " +
-                                   lotNumber);
-                // Don't return an invalid lot.
-                selectedLot = null;
+    public Lot getLot(int lotNumber){
+        Lot loteObtenido = null;
+        if(lotNumber >= 1){
+            Iterator<Lot> it = lots.iterator();
+            while(it.hasNext()){
+                Lot otroLote = it.next();
+                if(otroLote.getNumber() == lotNumber){
+                    loteObtenido = otroLote;
+                }
             }
-            return selectedLot;
         }
-        else {
-            System.out.println("Lot number: " + lotNumber +
-                               " does not exist.");
-            return null;
-        }
+        return loteObtenido;
     }
-    
+
+    /** 
+     * Elimina el lote con el número de lote especificado.
+     * @param number El número del lote que hay que eliminar,
+     * @return El lote con el número dado o null si no existe tal lote.
+     */
+    public Lot removeLot(int number) {
+        Lot selectedLot = null;
+        Iterator<Lot> it = lots.iterator();        
+        if(number >= 1){               
+            while (it.hasNext()){
+                Lot otroLote = it.next();
+                if(otroLote.getNumber() == number){
+                    selectedLot = otroLote;
+                    it.remove();
+                }
+            }
+        }
+        return selectedLot;
+    }
+
     /**
      * método para iterar a través de la colección de los lotes e
      * imprimir los detalles de todos los lotes.
      */
-     public void close(){
+    public void close(){
         for(Lot lot : lots) {
             if (lot.getHighestBid() != null){
                 System.out.println(lot.getNumber() + ": " + 
-                                    lot.getDescription() + " | Lote vendido a " + 
-                                    lot.getHighestBid().getBidder().getName() + 
-                                    " por " + lot.getHighestBid().getValue() 
-                                    + "€.");
+                    lot.getDescription() + " | Lote vendido a " + 
+                    lot.getHighestBid().getBidder().getName() + 
+                    " por " + lot.getHighestBid().getValue() 
+                    + "€.");
             }
             else {
                 System.out.println(lot.getNumber() + 
-                                    ": " + lot.getDescription() + 
-                                    " | Este lote no se ha vendido.");
+                    ": " + lot.getDescription() + 
+                    " | Este lote no se ha vendido.");
             }
         }
     }
-    
+
     public ArrayList<Lot> getUnsold() {
         ArrayList<Lot> noVendido = new ArrayList<Lot>();
         for (Lot lot : lots) {
