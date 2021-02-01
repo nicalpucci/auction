@@ -81,10 +81,12 @@ public class Auction
         Lot loteObtenido = null;
         if(lotNumber >= 1){
             Iterator<Lot> it = lots.iterator();
-            while(it.hasNext()){
+            boolean searching = true;
+            while(it.hasNext() && searching){
                 Lot otroLote = it.next();
                 if(otroLote.getNumber() == lotNumber){
                     loteObtenido = otroLote;
+                    searching = false;
                 }
             }
         }
